@@ -122,7 +122,7 @@ bool verify_airport(string word) {
     return (word.length() == 3 && all_of(word.begin(), word.end(), [](unsigned char c){ return isupper(c); }));
 }
 bool verify_date(string word) {
-    for (int i = 0; i < word.length(); i++) {
+    for (int i = 0; i < (int)word.length(); i++) {
         if (i == 2 || i == 5) {
             if (word[i] != '/') return false;
         } else {
@@ -135,7 +135,7 @@ bool verify_number(string word) {
     return (all_of(word.begin(), word.end(), [](unsigned int c){ return isdigit(c); }));
 }
 bool verify_time(string word) {
-    for (int i = 0; i < word.length(); i++) {
+    for (int i = 0; i < (int)word.length(); i++) {
         if (i == 2) {
             if (word[i] != ':') return false;
         } else {
