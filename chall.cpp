@@ -48,6 +48,7 @@ void process_checkout() {
     printf("Obrigada pela sua compra! A fatura será adicionada como um file (fatura.txt) no diretório atual.\n");
 }
 
+
 void checkout_prompt(vector<flight_t> displayed) {
     int index;
     printf("Introduza o numero do voo que pretende comprar: ");
@@ -60,7 +61,7 @@ void checkout_prompt(vector<flight_t> displayed) {
     }
     else {
         printf("A prosseguir para o checkout do voo: ");
-        printf_flight(displayed[index-1]);
+        print_flight(&displayed[index-1]);
         process_checkout();
     }
 }
@@ -70,7 +71,7 @@ vector<flight_t> search_flights(flight_t f) {
 
     //searches for flights that match the search criteria
     for (auto it = flights.begin(); it != flights.end(); it++) {
-        if (it->origin == f.origin && it->destiny == f.destiny && it->start_date == f.start_date && it->pass_number == f.pass_number) {
+        if (it->origin == f.origin && it->destiny == f.destiny && it->start_date == f.start_date && it->client_number == f.client_number) {
             flights.push_back(*it);
         }
     }
@@ -81,18 +82,16 @@ vector<flight_t> search_flights(flight_t f) {
 void display_flights(vector<flight_t> arg) {
     for(int i = 0; i < flights.size(); i++) {
         printf("%d. ", i);
-        printf_flight(arg[i]);
+        print_flight(&arg[i]);
     }
 }
 
-//prints flight to display to user using | as a separator
-void printf_flight(flight_t f) { printf("%s | %s | %s | %s | %s | %s | %s | %s\n", f.origin, f.destiny, f.start_date, f.pass_number, f.start_time, f.end_time, f.flight_number, f.cost); }
 
 void welcome_message() {
     string buffer;
     string message = "Bem-Vindo á nossa flight search engine!\n Aqui podes pesquisar sobre os voos disponiveis e comprar bilhetes.\n\n :: Pequenas Regras sobre a nossa engine ::\n -> Nomes das cidades para simplificação são abreviadas a 3 letras. ex: LIS para Lisboa\n -> Datas são aceites no formate DD/MM/YY\n -> Só os últimos dois digitos do ano são especificados sendo todos os voos passados no séc 21.\n\n Para começar a pesquisar podes introduzir o comando ,#.\n Obrigado por utilizares a nossa engine!!\n";
 
-    printf("%s", message);
+    printf("%s", message.c_str());
 
     cin >> buffer;
 

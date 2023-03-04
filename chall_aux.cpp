@@ -24,3 +24,10 @@ flight_t create_flight(string chunk) {
     current.cost = chunk.substr(0, chunk.find(" "));
     return current;
 }
+
+void print_flight(flight_t *flight) { 
+    printf("%s | %s | %s | %s | %s | %s | %s | %s\n", flight->origin.c_str(), 
+    flight->destiny.c_str(), flight->start_date.c_str(), flight->client_number.c_str(), 
+    flight->start_time.c_str(), flight->end_time.c_str(), flight->duration.c_str(), 
+    flight->flight_number.c_str(), flight->cost.c_str());
+}

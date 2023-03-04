@@ -44,4 +44,5 @@ string get_flight_number(flight_t *flight);
 string get_cost(flight_t *flight);
 vector <client_t> get_clients(flight_t *flight);
 flight_t create_flight(string chunk);
+void print_flight(flight_t *flight);
 
