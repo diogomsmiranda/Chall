@@ -1,33 +1,41 @@
 #include "chall_structs.hpp"
+#include "chall_text.hpp"
 
-void print_flight(flight_t *flight) { 
-    printf("%s | %s | %s | %s | %s | %s | %s | %s | %s\n", flight->origin.c_str(), 
-    flight->destiny.c_str(), flight->start_date.c_str(), flight->client_number.c_str(), 
-    flight->start_time.c_str(), flight->end_time.c_str(), flight->duration.c_str(), 
-    flight->flight_number.c_str(), flight->cost.c_str());
-}
 
-flight_t create_flight(string chunk) {
-    flight_t current;
-    //split the string into all the fields using strtok
-    current.origin = strtok((char*)chunk.c_str(), " ");
-    current.destiny = strtok(NULL, " ");
-    current.start_date = strtok(NULL, " ");
-    current.client_number = strtok(NULL, " ");
-    current.start_time = strtok(NULL, " ");
-    current.end_time = strtok(NULL, " ");
-    current.duration = strtok(NULL, " ");
-    current.flight_number = strtok(NULL, " ");
-    current.cost = strtok(NULL, " ");
-    return current;
+vector<flight_t> flights;
+vector<client_t> clients;
+
+ticket_t ticket;
+
+int option_of_bag;
+
+void save_client(client_t client,flight_t flight) {
+    ofstream file;
+    ifstream file1;
+    bool empty = false;
+    //check if file1 is empty
+    file1.open("clients/" + client.name + ".txt");
+    if(file1.peek() == std::ifstream::traits_type::eof()) {
+        empty = true;
+    }
+    file1.close();
+
+    file.open("clients/" + client.name + ".txt");
+    //if the file is empty write the client info if not jump to last line available an write ticket info
+    if (empty) {
+        file << client_to_str(client) << endl;
+        file << "Tickets:" << endl;
+    }
+    file << ticket_to_str(create_ticket(client, flight)) << endl;
 }
 
 void process_flights() {
     string line;
     ifstream file("flights.txt");
+    flight_t current;
     if (file.is_open()) {
         while (getline(file, line)) {
-            flight_t current = create_flight(line);
+            current = create_flight(line);
             flights.push_back(current);
         }
         file.close();
@@ -37,55 +45,189 @@ void process_flights() {
     }
 }
 
+void process_clients() {
+    string line;
+    ifstream file("clients.txt");
+    client_t current;
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            current = create_client(line);
+            clients.push_back(current);
+        }
+        file.close();
+    }
+    else {
+        printf("Unable to open file");
+    }
+}
+
+void create_invoice(client_t client, flight_t flight) {
+    ofstream file;
+    file.open("fatura.txt");
+    file << "Nome: " << client.name << endl;
+    file << "Email: " << client.mail << endl;
+    file << "Contacto: " << client.contact << endl;
+    file << "Morada: " << client.address << endl;
+    file << "Cartao de credito: " << client.credit << endl;
+    file << "Número do Avião: " << flight.airplane_n << endl;
+    file << "Número do Voo: " << flight.flight_number << endl;
+    file << "Origem: " << flight.origin << endl;
+    file << "Destino: " << flight.destiny << endl;
+    file << "Data de partida: " << flight.start_date << endl;
+    file << "Hora de partida: " << flight.start_time << endl;
+    file << "Hora de chegada: " << flight.end_time << endl;
+    file << "Duração: " << flight.duration << endl;
+    if(option_of_bag == 2) {
+        file << "Bagagem: Sim" << endl;
+        file << "Preço: " << stoi(flight.cost) + 30 << endl;
+    }
+    else {
+        file << "Bagagem: Não" << endl;
+        file << "Preço: " << stoi(flight.cost) << endl;
+    }
+    file.close();
+
+    ticket = create_ticket(client, flight);
+}
+
+vector<flight_t> sort_prompt(vector<flight_t> found) {
+    
+    int option;
+    
+    cout << text_sort;
+    cin >> option;
+
+    switch (option) {
+    case 1:
+        sort_end(found);
+        break;
+    case 2:
+        sort_dur(found);
+        break;
+    case 3:
+        sort_price(found);
+        break;
+    case 0:
+        sort_start(found);
+        break;
+    default:
+        cout << error_option;
+        sort_prompt(found);
+        break;
+    }
+
+    return found;
+}
+
 flight_t search_prompt() {
 
     flight_t f;
-    printf("Introduza a cidade de origem: ");
-    cin >> f.origin;
-    printf("Introduza a cidade de destino: ");
-    cin >> f.destiny;
-    printf("Introduza a data de partida (DD/MM/YY): ");
-    cin >> f.start_date;
-    printf("Introduza o numero de passageiros: ");
-    cin >> f.client_number;
+    string buffer;
 
+    // get origin airport
+    while(true) {
+        cout << text_origin;
+        cin >> buffer;
+        if (verify_airport(buffer)) { f.origin = buffer; break; }
+        else { cout << error_airport << endl; }
+    }
+    
+    // get destination airport
+    while(true) {
+        cout << text_destination;
+        cin >> buffer;
+        if (verify_airport(buffer)) { f.destiny = buffer; break; }
+        else { cout << error_airport << endl; }
+    }
+
+    // get start date
+    while(true) {
+        cout << text_date;
+        cin >> buffer;
+        if (verify_date(buffer)) { f.start_date = buffer; break; }
+        else { cout << error_date << endl; }
+    }
+
+    // get number of passengers
+    while(true) {
+        cout << text_passengers;
+        cin >> buffer;
+        if (verify_number(buffer)) { f.passengers = stoi(buffer); break; }
+        else { cout << error_number << endl; }
+    }
 
     return f;
 }
 
 //asks for user to input his name, mail, phone number, adress, credit card
-void process_checkout() {
-    string name, mail, phone, adress, credit_card;
-    printf("Introduza o seu nome: ");
-    cin >> name;
-    printf("Introduza o seu email: ");
-    cin >> mail;
-    printf("Introduza o seu numero de telefone: ");
-    cin >> phone;
-    printf("Introduza o seu endereco: ");
-    cin >> adress;
-    printf("Introduza o seu numero de cartao de credito: ");
-    cin >> credit_card;
+client_t process_checkout(flight_t flight) {
 
-    printf("Obrigada pela sua compra! A fatura será adicionada como um file (fatura.txt) no diretório atual.\n");
+    string name, mail, phone, address, credit;
+
+    // get client name
+    while(true) {
+        cout << text_name;
+        cin >> name;
+        if(verify_name(name)) { break; }
+        else { cout << error_name << endl; }
+    }
+
+    // get client mail
+    while(true) {
+        cout << text_mail;
+        cin >> mail;
+        break;
+    }
+
+    // get client phone number
+    while(true) {
+        cout << text_phone;
+        cin >> phone;
+        if(verify_phone(phone)) { break; }
+        else { cout << error_phone << endl; }
+    }
+
+    // get client address
+    while(true) {
+        cout << text_address;
+        cin >> address;
+        break;
+    }
+
+    // get credit card
+    while(true) {
+        cout << text_credit;
+        cin >> credit;
+        if(verify_credit(credit)) { break; }
+        else { cout << error_credit << endl; }
+    }
+    string client_info = name + " " + mail + " " + phone + " " + address + " " + credit+ " " + flight.airplane_n;
+
+    cout << text_buySuccess;
+
+    return create_client(client_info);
 }
 
 
-void checkout_prompt(vector<flight_t> displayed) {
+flight_t checkout_prompt(vector<flight_t> displayed) {
     int index;
-    printf("Introduza o numero do voo que pretende comprar: ");
+
+    cout << text_buy;
     cin >> index;
+    cout << text_baggage;
+    cin >> option_of_bag;
 
     //checks if index is valid
     if (index < 0 || index > (int)flights.size()) {
-        printf("Numero invalido, tente novamente.\n");
+        cout << error_buy;
         checkout_prompt(displayed);
     }
     else {
-        printf("A prosseguir para o checkout do voo: ");
+        cout << success_buy;
         print_flight(&displayed[index]);
-        process_checkout();
     }
+
+    return displayed[index];
 }
 
 vector<flight_t> search_flights(flight_t f) {
@@ -94,7 +236,7 @@ vector<flight_t> search_flights(flight_t f) {
     //searches for flights that match the search criteria
     for(int i = 0; i < (int)flights.size(); i++) {
         //print both flights being compared
-        if (f.origin == flights[i].origin && f.destiny == flights[i].destiny && f.start_date == flights[i].start_date) {
+        if (((f.origin == flights[i].origin && f.destiny == flights[i].destiny) || (f.origin == flights[i].destiny && f.destiny == flights[i].origin)) && f.start_date == flights[i].start_date) {
             found.push_back(flights[i]);
         }
     }
@@ -103,37 +245,31 @@ vector<flight_t> search_flights(flight_t f) {
 }
 
 void display_flights(vector<flight_t> arg) {
-    for(int i = 0; i < arg.size(); i++) {
+    for(int i = 0; i < (int)arg.size(); i++) {
         printf("%d. ", i);
         print_flight(&arg[i]);
     }
 }
 
 
-void welcome_message() {
-    string buffer;
-    string message = "Bem-Vindo á nossa flight search engine!\n Aqui podes pesquisar sobre os voos disponiveis e comprar bilhetes.\n\n :: Pequenas Regras sobre a nossa engine ::\n -> Nomes das cidades para simplificação são abreviadas a 3 letras. ex: LIS para Lisboa\n -> Datas são aceites no formate DD/MM/YY\n -> Só os últimos dois digitos do ano são especificados sendo todos os voos passados no séc 21.\n\n Para começar a pesquisar podes introduzir o comando ,#.\n Obrigado por utilizares a nossa engine!!\n";
-
-    printf("%s", message.c_str());
-
-    cin >> buffer;
-
-    if (buffer != "#") {
-        printf("Comando invalido, tente novamente.\n");
-        welcome_message();
-    }
-}
-
 int main() {
-    // figurative flight that will be used to search for flights
     flight_t search_f;
     vector<flight_t> searched_f;
+    flight_t flight;
+    client_t client;
 
     process_flights();
+    process_clients();
 
-    welcome_message();
+    cout << text_welcomeMessage << endl;
+
     search_f = search_prompt();
     searched_f = search_flights(search_f);
-    display_flights(searched_f);
-    checkout_prompt(searched_f);
+    display_flights(sort_prompt(searched_f));
+    flight = checkout_prompt(searched_f);
+    client = process_checkout(flight);
+    create_invoice(client, flight);
+    
+    save_client(client,flight);
+    return 0;
 }
