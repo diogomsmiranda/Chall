@@ -8,9 +8,6 @@
 
 using namespace std;
 
-
-unordered_set<flight_t> flights;
-
 typedef struct client {
     string name;
     string mail;
@@ -32,6 +29,8 @@ typedef struct flight {
     vector <client_t> clients;
 }flight_t ;
 
+
+unordered_set<flight_t> flights;
 
 
 string get_origin(flight_t *flight);
