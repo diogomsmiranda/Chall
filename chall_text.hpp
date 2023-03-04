@@ -9,8 +9,26 @@ string text_welcomeMessage =
     ":: Pequenas Regras sobre a nossa engine ::\n"
     "-> Nomes das cidades para simplificação são abreviadas a 3 letras. ex: LIS para Lisboa\n"
     "-> Datas são aceites no formate DD/MM/YY\n"
-    "-> Só os últimos dois digitos do ano são especificados sendo todos os voos passados no séc 21.\n\n"
-    "Para começar a pesquisar podes introduzir o comando ,#.\n Obrigado por utilizares a nossa engine!!\n";
+    "-> Só os últimos dois digitos do ano são especificados sendo todos os voos passados no séc 21.\n\n";
+
+string text_search = 
+    "Introduza o numero da opcao que pretende: \n"
+    "0. Pesquisar voos\n"
+    "1. Mostrar Tickets\n";
+
+string text_login_success =
+    "Login efetuado com sucesso!\n";
+
+string text_login_fail =
+    "Login falhou. Tente novamente.\n";
+
+string text_login = 
+    "Introduza o seu username e password (1 por linha) podes pression 0 para voltar ao menu: ";
+
+string text_mmenu = 
+    "0. Login de Cliente (Registo Automático ao fim de 1 uso)\n"
+    "1. Pesquisar voos\n"
+    "2. Sair\n";
 
 string text_origin = 
     "Introduza a cidade de origem: ";

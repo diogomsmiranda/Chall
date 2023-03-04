@@ -3,16 +3,26 @@
 
 
 vector<flight_t> flights;
-vector<client_t> clients;
+client_t client;
+vector<ticket_t> tickets;
 
 ticket_t ticket;
 
 int option_of_bag;
+int logged = 0;
 
 void save_client(client_t client,flight_t flight) {
     ofstream file;
     ifstream file1;
     bool empty = false;
+    cout << "Dê uma password para gravar: ";
+    cin >> client.password;
+
+    //write in file users.txt Name + " " + Password
+    file.open("users.txt", ios::app);
+    file << client.name + " " + client.password << endl;
+    file.close();
+
     //check if file1 is empty
     file1.open("clients/" + client.name + ".txt");
     if(file1.peek() == std::ifstream::traits_type::eof()) {
@@ -37,22 +47,6 @@ void process_flights() {
         while (getline(file, line)) {
             current = create_flight(line);
             flights.push_back(current);
-        }
-        file.close();
-    }
-    else {
-        printf("Unable to open file");
-    }
-}
-
-void process_clients() {
-    string line;
-    ifstream file("clients.txt");
-    client_t current;
-    if (file.is_open()) {
-        while (getline(file, line)) {
-            current = create_client(line);
-            clients.push_back(current);
         }
         file.close();
     }
@@ -117,6 +111,76 @@ vector<flight_t> sort_prompt(vector<flight_t> found) {
     }
 
     return found;
+}
+
+int verify_login(string username, string password) {
+    string line;
+    ifstream file("users.txt");
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            if (line == username + " " + password) {
+                file.close();
+                ifstream file1("clients/" + username + ".txt");
+                //get the first line of file1
+                getline(file1, line);
+                //create client
+                client = create_client(line);
+                //get tickets
+                while (getline(file1, line)) {
+                    if (line == "Tickets:") {
+                        while (getline(file1, line)) {
+                            ticket_t ticket = create_ticket_string(line);
+                            tickets.push_back(ticket);
+                        }
+                    }
+                }
+                file1.close();
+                return 1;
+            }
+        }
+        file.close();
+    }
+    else {
+        printf("Unable to open file");
+    }
+    return 0;
+}
+
+void login_prompt() {
+    string username, password;
+    cout << text_login;
+    cin >> username;
+    cin >> password;
+    if(username == "0") {
+        mmenu_prompt();
+    }else if (verify_login(username, password)) {
+        logged = 1;
+        cout << text_login_success;
+    } else {
+        cout << text_login_fail;
+        login_prompt();
+    }
+}
+
+void mmenu_prompt() {
+    int option;
+    cout << text_mmenu;
+    cin >> option;
+
+    switch (option) {
+    case 0:
+        login_prompt();
+        break;    
+    case 1:
+        break;
+    case 2:
+        exit(0);
+        break;
+    default:
+        cout << error_option;
+        mmenu_prompt();
+        break;
+    }
 }
 
 flight_t search_prompt() {
@@ -251,17 +315,36 @@ void display_flights(vector<flight_t> arg) {
     }
 }
 
+void show_tickets() {
+    //print every ticket in the vector
+    for(int i = 0; i < (int)tickets.size(); i++) {
+        cout << to_string(i) + ". " << ticket_to_str(tickets[i]) << endl;
+    }
+}
 
 int main() {
     flight_t search_f;
     vector<flight_t> searched_f;
     flight_t flight;
     client_t client;
+    int option;
 
     process_flights();
-    process_clients();
 
     cout << text_welcomeMessage << endl;
+
+    mmenu_prompt();
+
+    cout << text_search << endl;
+    while(true) {
+        cin >> option;
+        if (option == 0) {
+            break;
+        }
+        else if (option == 1) {
+            show_tickets();
+        }
+    }
 
     search_f = search_prompt();
     searched_f = search_flights(search_f);

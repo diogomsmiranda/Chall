@@ -65,6 +65,28 @@ ticket_t create_ticket(client_t client, flight_t flight) {
     return current;
 }
 
+ticket_t create_ticket_string(string chunk) {
+    ticket_t current;
+    current.flight_number = strtok((char*)chunk.c_str(), " ");
+    current.client_name = strtok(NULL, " ");
+    current.client_mail = strtok(NULL, " ");
+    current.client_contact = strtok(NULL, " ");
+    current.client_address = strtok(NULL, " ");
+    current.client_credit = strtok(NULL, " ");
+    current.client_password = strtok(NULL, " ");
+    current.client_lastflight = strtok(NULL, " ");
+    current.flight_origin = strtok(NULL, " ");
+    current.flight_destiny = strtok(NULL, " ");
+    current.flight_start_date = strtok(NULL, " ");
+    current.flight_start_time = strtok(NULL, " ");
+    current.flight_end_time = strtok(NULL, " ");
+    current.flight_duration = strtok(NULL, " ");
+    current.flight_cost = strtok(NULL, " ");
+    current.flight_airplane_n = strtok(NULL, " ");
+    current.client_bag = strtok(NULL, " ");
+    return current;
+}
+
 string ticket_to_str(ticket_t ticket) { return ticket.flight_number + " " + ticket.client_name + " " + ticket.client_mail + " " + ticket.client_contact + " " + ticket.client_address + " " + ticket.client_credit + " " + ticket.client_password + " " + ticket.client_lastflight + " " + ticket.flight_origin + " " + ticket.flight_destiny + " " + ticket.flight_start_date + " " + ticket.flight_start_time + " " + ticket.flight_end_time + " " + ticket.flight_duration + " " + ticket.flight_cost + " " + ticket.flight_airplane_n; }
 
 string client_to_str(client_t client) { return client.name + " " + client.mail + " " + client.contact + " " + client.address + " " + client.credit + " " + client.password + " " + client.lastflight; }
