@@ -1,5 +1,20 @@
 #include "chall_structs.hpp"
 
+void process_flights() {
+    string line;
+    ifstream file("flights.txt");
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            flight_t current = create_flight(line);
+            flights.insert(current);
+        }
+        file.close();
+    }
+    else {
+        printf("Unable to open file");
+    }
+}
+
 flight_t search_prompt() {
 
     flight_t f;
@@ -10,7 +25,7 @@ flight_t search_prompt() {
     printf("Introduza a data de partida (DD/MM/YY): ");
     cin >> f.start_date;
     printf("Introduza o numero de passageiros: ");
-    cin >> f.pass_number;
+    cin >> f.client_number;
 
 
     return f;
@@ -94,6 +109,8 @@ int main() {
     // figurative flight that will be used to search for flights
     flight_t search_f;
     vector<flight_t> searched_f;
+
+    process_flights();
 
     welcome_message();
     search_f = search_prompt();
