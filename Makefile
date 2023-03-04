@@ -7,7 +7,7 @@ STRUCTS = chall_structs
 $(TARGET).o: $(TARGET).cpp $(AUXILIARY).cpp $(STRUCTS).hpp
 
 all: $(TARGET).o
-	g++ $(TARGET).o -o $(TARGET)
+	g++ -o $(TARGET) $(TARGET).o
 
 clear:
 	rm -f $(TARGET).o

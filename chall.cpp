@@ -6,7 +6,7 @@ void process_flights() {
     if (file.is_open()) {
         while (getline(file, line)) {
             flight_t current = create_flight(line);
-            flights.insert(current);
+            flights.push_back(current);
         }
         file.close();
     }

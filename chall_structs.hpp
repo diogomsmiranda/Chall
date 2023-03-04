@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_set>
 #include <fstream>
 
 using namespace std;
@@ -30,7 +29,7 @@ typedef struct flight {
 }flight_t ;
 
 
-unordered_set<flight_t> flights;
+vector<flight_t> flights;
 
 
 string get_origin(flight_t *flight);
