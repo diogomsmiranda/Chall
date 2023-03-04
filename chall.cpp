@@ -1,5 +1,27 @@
 #include "chall_structs.hpp"
 
+void print_flight(flight_t *flight) { 
+    printf("%s | %s | %s | %s | %s | %s | %s | %s | %s\n", flight->origin.c_str(), 
+    flight->destiny.c_str(), flight->start_date.c_str(), flight->client_number.c_str(), 
+    flight->start_time.c_str(), flight->end_time.c_str(), flight->duration.c_str(), 
+    flight->flight_number.c_str(), flight->cost.c_str());
+}
+
+flight_t create_flight(string chunk) {
+    flight_t current;
+    //split the string into all the fields using strtok
+    current.origin = strtok((char*)chunk.c_str(), " ");
+    current.destiny = strtok(NULL, " ");
+    current.start_date = strtok(NULL, " ");
+    current.client_number = strtok(NULL, " ");
+    current.start_time = strtok(NULL, " ");
+    current.end_time = strtok(NULL, " ");
+    current.duration = strtok(NULL, " ");
+    current.flight_number = strtok(NULL, " ");
+    current.cost = strtok(NULL, " ");
+    return current;
+}
+
 void process_flights() {
     string line;
     ifstream file("flights.txt");
@@ -55,32 +77,33 @@ void checkout_prompt(vector<flight_t> displayed) {
     cin >> index;
 
     //checks if index is valid
-    if (index < 1 || index > flights.size()) {
+    if (index < 0 || index > (int)flights.size()) {
         printf("Numero invalido, tente novamente.\n");
         checkout_prompt(displayed);
     }
     else {
         printf("A prosseguir para o checkout do voo: ");
-        print_flight(&displayed[index-1]);
+        print_flight(&displayed[index]);
         process_checkout();
     }
 }
 
 vector<flight_t> search_flights(flight_t f) {
-    vector<flight_t> flights;
+    vector<flight_t> found;
 
     //searches for flights that match the search criteria
-    for (auto it = flights.begin(); it != flights.end(); it++) {
-        if (it->origin == f.origin && it->destiny == f.destiny && it->start_date == f.start_date && it->client_number == f.client_number) {
-            flights.push_back(*it);
+    for(int i = 0; i < (int)flights.size(); i++) {
+        //print both flights being compared
+        if (f.origin == flights[i].origin && f.destiny == flights[i].destiny && f.start_date == flights[i].start_date) {
+            found.push_back(flights[i]);
         }
     }
 
-    return flights;
+    return found;
 }
 
 void display_flights(vector<flight_t> arg) {
-    for(int i = 0; i < flights.size(); i++) {
+    for(int i = 0; i < arg.size(); i++) {
         printf("%d. ", i);
         print_flight(&arg[i]);
     }
@@ -95,10 +118,7 @@ void welcome_message() {
 
     cin >> buffer;
 
-    if (buffer == "#") {
-        search_prompt();
-    }
-    else {
+    if (buffer != "#") {
         printf("Comando invalido, tente novamente.\n");
         welcome_message();
     }

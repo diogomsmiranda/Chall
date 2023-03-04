@@ -10,24 +10,3 @@ string get_duration(flight_t *flight) return flight->duration;
 string get_flight_number(flight_t *flight) return flight->flight_number;
 string get_cost(flight_t *flight) return flight->cost;
 vector<flight_t> get_clients(flight_t *flight) return flight->clients;
-
-flight_t create_flight(string chunk) {
-    flight_t current;
-    current.origin = chunk.substr(0, chunk.find(" "));
-    current.destiny = chunk.substr(0, chunk.find(" "));
-    current.start_date = chunk.substr(0, chunk.find(" "));
-    current.client_number = chunk.substr(0, chunk.find(" "));
-    current.start_time = chunk.substr(0, chunk.find(" "));
-    current.end_time = chunk.substr(0, chunk.find(" "));
-    current.duration = chunk.substr(0, chunk.find(" "));
-    current.flight_number = chunk.substr(0, chunk.find(" "));
-    current.cost = chunk.substr(0, chunk.find(" "));
-    return current;
-}
-
-void print_flight(flight_t *flight) { 
-    printf("%s | %s | %s | %s | %s | %s | %s | %s\n", flight->origin.c_str(), 
-    flight->destiny.c_str(), flight->start_date.c_str(), flight->client_number.c_str(), 
-    flight->start_time.c_str(), flight->end_time.c_str(), flight->duration.c_str(), 
-    flight->flight_number.c_str(), flight->cost.c_str());
-}
